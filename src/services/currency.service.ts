@@ -15,8 +15,8 @@ export class CurrencyService {
 
     private readonly BASE_URL = 'https://api.exchangeratesapi.io';
 
-    private getCurrencyByUrl(url: string): Observable<any> {
-        return this.http.get(url).pipe(
+    private pipeResponseRatesToString(res: Observable<any>): Observable<any> {
+        return res.pipe(
             map((response: Currency) => ({
                 ...response,
                 rates: JSON.stringify(response.rates), // Work around for explicite type required from GraphQl
@@ -25,12 +25,22 @@ export class CurrencyService {
     }
 
     findLatestExchangeRate(baseCurrency: string, targetCurrency: string): Observable<any> {
-        return this.getCurrencyByUrl(
-            this.BASE_URL + `/latest?symbols=${targetCurrency.toUpperCase()}&base=${baseCurrency.toUpperCase()}`,
+        return this.pipeResponseRatesToString(
+            this.http.get(
+                this.BASE_URL + `/latest?symbols=${targetCurrency.toUpperCase()}&base=${baseCurrency.toUpperCase()}`,
+            ),
         );
     }
 
     findLatestRatesByBaseCurrency(baseCurrency: string): Observable<any> {
-        return this.getCurrencyByUrl(this.BASE_URL + `/latest?base=${baseCurrency.toUpperCase()}`);
+        return this.pipeResponseRatesToString(
+            this.http.get(this.BASE_URL + `/latest?base=${baseCurrency.toUpperCase()}`),
+        );
+    }
+
+    findCurrencyList(): Observable<any> {
+        return this.http
+            .get(this.BASE_URL + '/latest?base=NZD')
+            .pipe(map((response: Currency) => ({currencyList: Object.keys(response.rates)})));
     }
 }

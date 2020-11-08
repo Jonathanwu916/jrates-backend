@@ -11,3 +11,9 @@ export class Currency {
     @Field()
     date!: string;
 }
+
+@ObjectType()
+export class CurrencyList {
+    @Field(type => [String])
+    currencyList!: string[];
+}
