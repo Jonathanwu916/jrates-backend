@@ -1,4 +1,3 @@
-import {NotFoundException} from '@nestjs/common';
 import {Args, Query, Resolver} from '@nestjs/graphql';
 import {Observable} from 'rxjs';
 import {CurrencyService} from '../services/currency.service';
